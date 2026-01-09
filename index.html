@@ -19,6 +19,11 @@
     <button onclick="processAndShare()">Mask & Share</button>
 
     <script>
+        // Add this at the top of your existing <script> section
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js');
+        }
+        
         // Check if data was shared to the app (Android Only)
         window.addEventListener('DOMContentLoaded', () => {
             const parsedUrl = new URL(window.location);
