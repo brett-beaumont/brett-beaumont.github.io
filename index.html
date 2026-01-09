@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordle Masker</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 20px; background: #121213; color: white; }
+        textarea { width: 100%; height: 150px; background: #272729; color: white; border: 1px solid #3a3a3c; margin: 10px 0; border-radius: 8px; padding: 10px; }
+        button { background: #538d4e; color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 10px; }
+        .hint { font-size: 0.9em; color: #818384; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h2>Wordle Masker</h2>
+    <p class="hint">Masks your first guess so friends can't cheat!</p>
+    
+    <textarea id="inputArea" placeholder="Paste Wordle result here..."></textarea>
+    <button onclick="processAndShare()">Mask & Share</button>
+
+    <script>
+        // Check if data was shared to the app (Android Only)
+        window.addEventListener('DOMContentLoaded', () => {
+            const parsedUrl = new URL(window.location);
+            const sharedText = parsedUrl.searchParams.get('text');
+            if (sharedText) {
+                document.getElementById('inputArea').value = sharedText;
+            }
+        });
+
+        function processAndShare() {
+            let text = document.getElementById('inputArea').value;
+            if (!text) return alert("Please paste your result first!");
+
+            // Logic: Find the first line that contains 5 colored squares and replace it
+            const lines = text.split('\n');
+            for (let i = 0; i < lines.length; i++) {
+                if (/[🟩🟨⬛⬜🟧🟦]{5}/.test(lines[i])) {
+                    lines[i] = "❓❓❓❓❓";
+                    break; 
+                }
+            }
+            const modifiedText = lines.join('\n');
+
+            // Share to Messenger/System
+            if (navigator.share) {
+                navigator.share({ text: modifiedText })
+                .catch((error) => console.log('Error sharing', error));
+            } else {
+                // Fallback for desktop: Copy to clipboard
+                navigator.clipboard.writeText(modifiedText);
+                alert("Modified result copied to clipboard!");
+            }
+        }
+    </script>
+</body>
+</html>

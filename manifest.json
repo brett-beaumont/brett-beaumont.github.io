@@ -1,0 +1,16 @@
+{
+  "name": "Wordle Masker",
+  "short_name": "Masker",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#121213",
+  "theme_color": "#538d4e",
+  "icons": [{ "src": "icon.png", "sizes": "512x512", "type": "image/png" }],
+  "share_target": {
+    "action": "/",
+    "method": "GET",
+    "params": {
+      "text": "text"
+    }
+  }
+}
