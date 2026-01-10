@@ -1,85 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wordle Masker</title>
-    <link rel="manifest" href="manifest.json">
-    <style>
-        body { font-family: sans-serif; text-align: center; padding: 20px; background: #121213; color: white; }
-        #sw-badge { 
-            display: inline-block; padding: 5px 10px; border-radius: 20px; font-size: 12px; 
-            margin-bottom: 20px; background: #3a3a3c; color: #818384; 
+function processAndShare() {
+    let text = document.getElementById('inputArea').value;
+    if (!text) return alert("Please paste your result first!");
+
+    // 1. The Sassy Remarks Library
+    const remarks = [
+        "First guess classified. Nice try, Sherlock.",
+        "Data redacted for the 'information gatherers.'",
+        "Keep your eyes on your own paper!",
+        "Strategy hidden to protect the innocent.",
+        "Fog of War: Enabled.",
+        "I'm onto your little games.",
+        "Find your own vowels, thanks.",
+        "Privacy is a human right, even in Wordle.",
+        "A magician never reveals their first guess.",
+        "Stop 'gathering' my data!",
+        "I know you're looking...",
+        "Why are you like this?",
+        "First guess secret? Locked and loaded.",
+        "Gatekeeping my strategy for your own good.",
+        "Trust no one, not even your Wordle buddy.",
+        "Not today, Data Miner.",
+        "This isn't a team sport.",
+        "My first guess is none of your business!",
+        "Stop the count (of my letters)!",
+        "Using all information available? Not today."
+    ];
+
+    // 2. The Masking Logic
+    const lines = text.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+        if (/[🟩🟨⬛⬜🟧🟦]{5}/.test(lines[i])) {
+            lines[i] = "❓❓❓❓❓";
+            break; 
         }
-        .active { background: #538d4e !important; color: white !important; }
-        .error { background: #b59f3b !important; color: white !important; }
-        
-        textarea { width: 100%; height: 150px; background: #272729; color: white; border: 1px solid #3a3a3c; margin: 10px 0; border-radius: 8px; padding: 10px; box-sizing: border-box; }
-        button { background: #538d4e; color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 10px; font-weight: bold; }
-        .hint { font-size: 0.9em; color: #818384; margin-bottom: 10px; }
-    </style>
-</head>
-<body>
+    }
 
-    <div id="sw-badge">Service Worker: Loading...</div>
-    
-    <h2>Wordle Masker</h2>
-    <p class="hint">Masks your first guess for spoiler-free sharing.</p>
-    
-    <textarea id="inputArea" placeholder="Paste Wordle result here..."></textarea>
-    <button onclick="processAndShare()">Mask & Share</button>
+    // 3. Pick a random remark and append it
+    const randomRemark = remarks[Math.floor(Math.random() * remarks.length)];
+    const modifiedText = lines.join('\n') + "\n\n" + randomRemark;
 
-    <script>
-        const badge = document.getElementById('sw-badge');
-
-        // 1. SERVICE WORKER REGISTRATION & STATUS CHECK
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-            .then(registration => {
-                badge.innerText = "Service Worker: Registered ✅";
-                badge.classList.add('active');
-                console.log('SW registered:', registration);
-            })
-            .catch(error => {
-                badge.innerText = "Service Worker: Failed ❌";
-                badge.classList.add('error');
-                console.error('SW registration failed:', error);
-            });
-        } else {
-            badge.innerText = "Service Worker: Not Supported";
-        }
-
-        // 2. RECEIVE SHARED DATA (Android Only)
-        window.addEventListener('DOMContentLoaded', () => {
-            const parsedUrl = new URL(window.location);
-            const sharedText = parsedUrl.searchParams.get('text');
-            if (sharedText) {
-                document.getElementById('inputArea').value = sharedText;
-            }
-        });
-
-        // 3. THE MASKING LOGIC
-        function processAndShare() {
-            let text = document.getElementById('inputArea').value;
-            if (!text) return alert("Please paste your result first!");
-
-            const lines = text.split('\n');
-            for (let i = 0; i < lines.length; i++) {
-                if (/[🟩🟨⬛⬜🟧🟦]{5}/.test(lines[i])) {
-                    lines[i] = "❓❓❓❓❓";
-                    break; 
-                }
-            }
-            const modifiedText = lines.join('\n');
-
-            if (navigator.share) {
-                navigator.share({ text: modifiedText })
-                .catch((error) => console.log('Error sharing', error));
-            } else {
-                navigator.clipboard.writeText(modifiedText);
-                alert("Modified result copied to clipboard!");
-            }
-        }
-    </script>
-</body>
-</html>
+    // 4. Share to Messenger/System
+    if (navigator.share) {
+        navigator.share({ text: modifiedText })
+        .catch((error) => console.log('Error sharing', error));
+    } else {
+        navigator.clipboard.writeText(modifiedText);
+        alert("Modified result + Sassy Remark copied!");
+    }
+}
